@@ -1,109 +1,172 @@
-# English-to-ASL Gloss-Based Pipeline
+# English-to-ASL Rules Pipeline
 
-An `English -> ASL gloss -> pose -> video` pipeline for spoken-to-signed translation.
+This project translates **English text** into an **ASL-oriented gloss sequence** and then converts that gloss sequence into a **skeletal pose animation**.
 
-- This fork is focused on English input and American Sign Language (`ase`) output.
+It is no longer a general multilingual research fork. The codebase is intentionally narrowed to a single path:
 
-- Paper available on [arxiv](https://arxiv.org/abs/2305.17714), presented
-  at [AT4SSL 2023](https://sites.google.com/tilburguniversity.edu/at4ssl2023/).
+- Input: English
+- Output sign language: American Sign Language (`ase`)
+- Glosser strategy: rule-based only
 
-![Visualization of our pipeline](assets/pipeline.jpg)
+![Pipeline overview](assets/pipeline.jpg)
 
-## Install
+## What This Project Does
+
+The pipeline has three stages:
+
+1. **English text to ASL-style gloss**
+   The rule engine rewrites English into a gloss sequence that is closer to ASL structure than plain English word order.
+
+2. **Gloss to pose**
+   Each gloss is matched against a pose lexicon. If a word is missing from the lexicon, the system can fall back to ASL fingerspelling.
+
+3. **Pose to video**
+   The generated pose sequence can optionally be rendered into a video if you install the external `pose-to-video` package.
+
+## Project Scope
+
+This repository is intentionally constrained.
+
+- Only English input is supported.
+- Only ASL output is supported.
+- Only the `rules` glosser exists.
+- The bundled English demo lexicon is minimal and is mainly useful for smoke tests and UI demos.
+- Unknown English words usually resolve through the bundled ASL fingerspelling poses.
+
+## How The Rules Work
+
+The text-to-gloss logic lives in [spoken_to_signed/text_to_gloss/rules.py](spoken_to_signed/text_to_gloss/rules.py).
+
+The current rule set is designed to produce a practical ASL-oriented gloss approximation, not a full linguistic model of ASL. The main transformations are:
+
+- front explicit time expressions,
+- drop English articles and filler words,
+- keep useful determiners such as `MY`, `YOUR`, `THIS`, `THAT`,
+- move adjectives and numbers after nouns where appropriate,
+- move modal verbs after the main lexical content,
+- push manual negation toward clause-final position,
+- push WH terms toward clause-final position,
+- drop copular `be` when it only links to an adjectival or nominal predicate.
+
+This gives you a deterministic and debuggable gloss pipeline that is easier to control than a model-driven translator.
+
+## Repository Layout
+
+- [app.py](app.py)  
+  Streamlit demo UI for entering English text, previewing glosses, and rendering the pose animation.
+
+- [spoken_to_signed/text_to_gloss/rules.py](spoken_to_signed/text_to_gloss/rules.py)  
+  English-to-ASL rule engine.
+
+- [spoken_to_signed/gloss_to_pose](spoken_to_signed/gloss_to_pose)  
+  Gloss lookup, pose concatenation, smoothing, and fingerspelling fallback.
+
+- [assets/dummy_lexicon_en](assets/dummy_lexicon_en)  
+  Tiny bundled English demo lexicon.
+
+- [spoken_to_signed/assets/fingerspelling_lexicon/ase](spoken_to_signed/assets/fingerspelling_lexicon/ase)  
+  ASL fingerspelling pose assets used as fallback.
+
+## Installation
+
+Use a virtual environment and install the project in editable mode:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -e .
 ```
 
-## Usage
+The rules pipeline uses spaCy. If the English model is not installed, the loader may attempt to download `en_core_web_sm` automatically the first time you run it.
 
-The project now exposes a single path: English text in, ASL gloss and pose out.
-To demo it locally with the bundled dummy lexicon:
+## Command Line Usage
+
+### Text to gloss
 
 ```bash
-git clone https://github.com/ZurichNLP/spoken-to-signed-translation
-cd spoken-to-signed-translation
+text_to_gloss \
+  --text "Tomorrow my big dog can go."
+```
 
-pip install .
+### Text to gloss to pose
 
+```bash
 text_to_gloss_to_pose \
   --text "Children eat pizza." \
   --lexicon "assets/dummy_lexicon_en" \
   --pose "quick_test.pose"
 ```
 
-#### Text-to-Gloss Translation
+### Text to gloss to pose to video
 
-This script translates input text into gloss notation.
-
-```bash
-text_to_gloss \
-  --text <input_text>
-```
-
-#### Text-to-Gloss-to-Pose Translation
-
-This script translates input text into gloss notation, then converts the glosses into a pose file.
+Video generation is optional and requires an extra package:
 
 ```bash
-text_to_gloss_to_pose \
-  --text <input_text> \
-  --lexicon <path_to_directory> \
-  --pose <output_pose_file_path>.pose
+pip install 'pose-to-video[pix2pix,simple_upscaler] @ git+https://github.com/sign-language-processing/pose-to-video'
 ```
 
-#### Text-to-Gloss-to-Pose-to-Video Translation
-
-This script translates input text into gloss notation, converts the glosses into a pose file, and then transforms the pose file into a video.
-
-> **Note:** Video generation requires the `pose-to-video` package with pix2pix and upscaler:
-> ```bash
-> pip install 'pose-to-video[pix2pix,simple_upscaler] @ git+https://github.com/sign-language-processing/pose-to-video'
-> ```
+Then run:
 
 ```bash
 text_to_gloss_to_pose_to_video \
-  --text <input_text> \
-  --lexicon <path_to_directory> \
-  --video <output_video_file_path>.mp4
+  --text "Children eat pizza." \
+  --lexicon "assets/dummy_lexicon_en" \
+  --video "quick_test.mp4"
 ```
 
-## Methodology
+## Streamlit App
 
-The pipeline consists of three main components:
+Run the demo UI with:
 
-1. **Text-to-Gloss Translation**
+```bash
+streamlit run app.py
+```
 
-   Transforms English input text into an ASL-oriented gloss sequence using the
-   rule-based pipeline in [spoken_to_signed/text_to_gloss/rules.py](spoken_to_signed/text_to_gloss/rules.py).
+The app is fixed to the only supported configuration:
 
-2. **Gloss-to-Pose Conversion**
+- English input
+- ASL output
+- rule-based glossing
 
-  - [Lookup](spoken_to_signed/gloss_to_pose/lookup/lookup.py): Uses a lexicon of signed languages to convert the sequence of glosses into a
-      sequence of poses.
-  - [Pose Concatenation](spoken_to_signed/gloss_to_pose/concatenate.py): The poses are then cropped, concatenated, and smoothed,
-      creating a pose representation for the input sentence.
+It will display:
 
-3. **Pose-to-Video Generation**
+- the generated gloss sequence,
+- a skeletal animation preview,
+- downloadable `.pose` and `.gif` outputs.
 
-    Transforms the processed pose video back into a synthesized video using an image translation model.
+## Notes About The Bundled Lexicon
 
-## Supported Language Pair
+The included English lexicon is intentionally small. It is there to keep the repository lightweight and to provide a predictable demo path.
 
-| Spoken Language | Sign Language | Codes |
-|----------------|---------------|-------|
-| English        | American Sign Language | `en -> ase` |
+In practice:
 
-## Online Playgrounds
+- known demo entries resolve directly through `assets/dummy_lexicon_en`,
+- many ordinary words will fall back to fingerspelling,
+- a production-quality system will need a much larger ASL lexicon.
 
-We have two available:
+## Testing
 
-- [sign.mt](https://sign.mt) is a web interface of a translation system.
-- [research.sign.mt](https://research.sign.mt) is an overview of sign language processing literature.
+The focused test suite for the current repo is:
+
+```bash
+python3 -m pytest tests/test_english_rules.py tests/test_e2e.py
+```
+
+These tests cover:
+
+- rule ordering behavior,
+- English-to-pose generation with the bundled demo lexicon,
+- fingerspelling fallback behavior.
+
+## Upstream Context
+
+This repository started from a broader spoken-to-signed research codebase associated with the paper below, but the current code has been simplified to a single English-to-ASL rules-based workflow.
+
+Paper: [An Open-Source Gloss-Based Baseline for Spoken to Signed Language Translation](https://arxiv.org/abs/2305.17714)
 
 ## Citation
 
-If you find this work useful, please cite our paper:
+If the upstream research is relevant to your use case, cite:
 
 ```bib
 @inproceedings{moryossef2023baseline,
