@@ -1,4 +1,6 @@
-LANGUAGE_BACKUP = {}
+LANGUAGE_BACKUP = {
+    "ins": "ase",  # Indian Sign Language falls back to American Sign Language
+}
 
 
 def languages_set(signed_language: str):
