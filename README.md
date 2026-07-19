@@ -79,41 +79,6 @@ pip install -e .
 
 The rules pipeline uses spaCy. If the English model is not installed, the loader may attempt to download `en_core_web_sm` automatically the first time you run it.
 
-## Command Line Usage
-
-### Text to gloss
-
-```bash
-text_to_gloss \
-  --text "Tomorrow my big dog can go."
-```
-
-### Text to gloss to pose
-
-```bash
-text_to_gloss_to_pose \
-  --text "Children eat pizza." \
-  --lexicon "assets/dummy_lexicon_en" \
-  --pose "quick_test.pose"
-```
-
-### Text to gloss to pose to video
-
-Video generation is optional and requires an extra package:
-
-```bash
-pip install 'pose-to-video[pix2pix,simple_upscaler] @ git+https://github.com/sign-language-processing/pose-to-video'
-```
-
-Then run:
-
-```bash
-text_to_gloss_to_pose_to_video \
-  --text "Children eat pizza." \
-  --lexicon "assets/dummy_lexicon_en" \
-  --video "quick_test.mp4"
-```
-
 ## Streamlit App
 
 Run the demo UI with:
@@ -133,6 +98,38 @@ It will display:
 - the generated gloss sequence,
 - a skeletal animation preview,
 - downloadable `.pose` and `.gif` outputs.
+
+## API Server
+
+You can also run the project as an API server so another program can access it.
+
+### Start the Server
+
+Start the FastAPI server:
+
+```bash
+uvicorn server:app --reload
+```
+
+Or via Python:
+
+```bash
+python3 -m uvicorn server:app --reload
+```
+
+### API Endpoint
+
+- **URL:** `http://127.0.0.1:8000/spoken_text_to_signed_pose`
+- **Method:** `GET`
+- **Query Parameters:**
+  - `text` (required): The English word or phrase to translate (e.g. `hello`)
+  - `spoken` (optional, default: `en`): Spoken language code (only `en` supported)
+  - `signed` (optional, default: `ins`): Sign language code (`ins` for Indian Sign Language, or `ase` for American Sign Language as a fallback)
+
+**Example Request:**
+```bash
+curl -i "http://127.0.0.1:8000/spoken_text_to_signed_pose?text=hello&spoken=en&signed=ins"
+```
 
 ## Notes About The Bundled Lexicon
 
