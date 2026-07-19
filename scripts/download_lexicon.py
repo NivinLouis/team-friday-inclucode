@@ -224,6 +224,32 @@ EVERYDAY_WORDS = [
     "machine learning", "learning", "model", "train", "algorithm",
     "developer", "engineer", "user", "interface", "experience", "web",
     "app", "application", "mobile", "internet", "security", "privacy",
+    
+    # ── Top ASL/ISL Gloss & Daily Life ───────────────────────────────────────
+    "boy", "girl", "marriage", "mad", "fine", "deaf", "hearing", "sign",
+    "sign language", "name", "nice", "what's up", "beautiful", "ugly", 
+    "smart", "stupid", "funny", "boring", "exciting", "favorite", "color", 
+    "number", "animal", "pet", "pants", "coat", "dollar", "cent", "job", 
+    "coworker", "desk", "wake up", "bath", "shower", "brush teeth", 
+    "comb hair", "get dressed", "bake", "sweep", "vacuum", "ride", "fly", 
+    "vacation", "trip", "holiday", "birthday", "party", "music", "song", 
+    "movie", "video game", "principal", "art", "gym", "recess", "toy", 
+    "enemy", "bully", "hurt", "pill", "clinic", "bandaid", "bruise", 
+    "stomachache", "toothache", "sneeze", "flu", "asthma", "cancer", 
+    "stroke", "fire", "police", "jail", "prison", "court", "judge", 
+    "law", "rule", "government", "president", "vote", "election", 
+    "campaign", "politics", "war", "army", "navy", "air force", "marines", 
+    "coast guard", "veteran", "weapon", "gun", "sword", "bomb", "explosion", 
+    "death", "die", "dead", "kill", "murder", "funeral", "cemetery", 
+    "grave", "ghost", "monster", "vampire", "werewolf", "zombie", "alien", 
+    "ufo", "space", "planet", "world", "universe", "galaxy", "black hole", 
+    "spaceship", "astronaut", "rocket", "satellite", "telescope", 
+    "microscope", "scientist", "experiment", "laboratory", "chemistry", 
+    "biology", "physics", "astronomy", "geology", "meteorology", "sleet", 
+    "hail", "hurricane", "tornado", "earthquake", "volcano", "tsunami", 
+    "flood", "drought", "wildfire", "nature", "environment", "climate change", 
+    "pollution", "recycle", "garbage", "trash", "litter", "dump", 
+    "landfill", "waste", "all done", "nothing", "none"
 ]
 
 # Deduplicate while preserving order
