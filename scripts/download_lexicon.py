@@ -207,6 +207,23 @@ EVERYDAY_WORDS = [
     "also", "only", "just", "really", "too", "so", "then", "because",
     "but", "and", "or", "if", "when", "while", "although",
     "quickly", "slowly", "carefully", "clearly", "suddenly",
+
+    # ── Speeches & Presentations ─────────────────────────────────────────────
+    "audience", "topic", "presentation", "slide", "speech", "present",
+    "introduce", "speaker", "microphone", "stage", "event", "host",
+    "guest", "honor", "award", "appreciate", "attention", "conclusion",
+    "summary", "discuss", "explain", "feedback", "lady", "gentleman", 
+    "point", "thank", "vision", "goal", "strategy", "impact", "result",
+    
+    # ── Technical & Workshops ────────────────────────────────────────────────
+    "technology", "workshop", "code", "program", "software", "hardware",
+    "system", "network", "data", "database", "server", "client", "frontend",
+    "backend", "bug", "error", "fix", "solution", "test", "deploy",
+    "project", "team", "agile", "sprint", "meeting", "brainstorm",
+    "innovate", "design", "architecture", "cloud", "artificial intelligence",
+    "machine learning", "learning", "model", "train", "algorithm",
+    "developer", "engineer", "user", "interface", "experience", "web",
+    "app", "application", "mobile", "internet", "security", "privacy",
 ]
 
 # Deduplicate while preserving order
